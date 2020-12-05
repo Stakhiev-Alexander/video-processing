@@ -2,6 +2,7 @@ import os
 import glob
 
 import skvideo.io
+import cv2
 import ffmpeg
 import image_slicer
 from PIL import Image
@@ -11,8 +12,8 @@ IMG_EXTENTION = 'png'
 
 
 def get_nb_frames(video_path):
-    videometadata = skvideo.io.ffprobe(video_path)
-    nb_frames = int(videometadata['video']['@nb_frames'])
+    videometadata = cv2.VideoCapture("video.mp4")
+    nb_frames = int(videometadata.get(cv2.CAP_PROP_FRAME_COUNT))
     return nb_frames
 
 
@@ -76,13 +77,15 @@ def cut_frames(video_path, output_dir='./cut_frames/', nb_frames_cut=-1):
         except ffmpeg.Error as e:
             print('stdout:', e.stdout.decode('utf8'))
             print('stderr:', e.stderr.decode('utf8'))
+
+    return output_dir    
     
   
 def assemble_video_lossless(imgs_path, framerate, filename='output', output_dir='./'):
     in_path_pattern = imgs_path + '*.' + IMG_EXTENTION
     out_path = output_dir + filename + '.mkv'
 
-    # ffmpeg -framerate 10 -i <imgs_path>/%05d.png -c:v copy <output_dir>/<filename>.mkv
+    # ffmpeg -framerate <framerate> -i <imgs_path>/%05d.png -c:v copy <output_dir>/<filename>.mkv
     try:
         (
             ffmpeg
@@ -95,7 +98,7 @@ def assemble_video_lossless(imgs_path, framerate, filename='output', output_dir=
         print('stderr:', e.stderr.decode('utf8'))
 
 
-def split_imgs(imgs_path, output_dir, split_factor=9):
+def split_imgs(imgs_path, output_dir, split_factor=4):
     os.makedirs(output_dir, exist_ok=True)
 
     for img_path in glob.glob(imgs_path +  '*.' + IMG_EXTENTION):
@@ -111,6 +114,7 @@ def join_imgs(imgs_path, output_dir, split_factor):
         img_base_name = os.path.splitext(os.path.basename(img_path))[0].split('_')[0]
         base_names.add(img_base_name)
 
+
     for base_name in base_names:
         tiles = []
         i = 0
@@ -122,7 +126,6 @@ def join_imgs(imgs_path, output_dir, split_factor):
             for a, b in zip(pos, im.size):
                 position_xy[count] = a * b
                 count = count + 1
-            print(position_xy)
             tiles.append(
                 image_slicer.Tile(
                     image=im,
@@ -133,21 +136,23 @@ def join_imgs(imgs_path, output_dir, split_factor):
                 )
             )
             i = i + 1
-        return
+        
         joined_img = image_slicer.join(tiles)
         joined_img.save(output_dir + base_name + '.' + IMG_EXTENTION)
 
 
 def main():
-    video_path = '/run/media/alex/Data/video_enhancment/10sec.mp4'
+    video_path = '/run/media/alex/Data/video_enhancment/Demo2/hockey_1_7GB.mov'
 
-    get_nb_frames(video_path) 
-    print(get_resolution(video_path))
-    print(get_avg_fps(video_path))
-    cut_frames(video_path, nb_frames_cut=10)
-    assemble_video_lossless('./cut_frames/', framerate=25)
+    # get_nb_frames(video_path) 
+    # print(get_resolution(video_path))
+    # print(get_avg_fps(video_path))
+    cut_frames(video_path)
+    # assemble_video_lossless('./cut_frames/', framerate=25)
     split_imgs('./cut_frames/', './splited_frames/')
-    join_imgs('./splited_frames/', './joined_frames/', 2)
+    # join_imgs('./splited_frames/', './joined_frames/', 2)
+    # split_imgs('/home/alex/Desktop/1/', '/home/alex/Desktop/1/')
+    # join_imgs('/home/alex/Desktop/1/', './lol/', 4)
 
 
 if __name__ == '__main__':

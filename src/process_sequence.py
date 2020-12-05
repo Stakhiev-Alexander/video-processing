@@ -1,0 +1,64 @@
+import mimetypes
+import os
+
+from sequence_stage_base import SequenceStage
+from denoise_stage import DenoiseStage
+import process_sequence_logger as ps_logger
+from utils.video_tools import cut_frames
+
+
+logger = ps_logger.get_logger(__name__) 
+
+
+class UnknownInputType(Exception):
+    pass
+
+
+class ProcessSequence(object):
+    @staticmethod
+    def get_input_frames(input):
+        if os.path.isdir(input):
+            logger.info(f'Input dir: {input}')
+            return input
+
+        mimestart = mimetypes.guess_type(input)[0] 
+        if mimestart is None:
+            raise UnknownInputType  
+
+        file_type = mimestart.split('/')[0]
+        if file_type == 'video':
+            input_dir = cut_frames(input)
+            logger.info(f'Input dir: {input_dir}')
+            return input_dir
+        else:
+            raise UnknownInputType
+
+
+    def __init__(self, input, stages=None):
+        self._input_path = self.__class__.get_input_frames(input)
+        
+        self._stages = []
+        if stages:
+          if not isinstance(stages, (list, tuple)):
+            stages = [stages]
+          for stage in stages:
+            self.add(stage)
+
+
+    def add(self, stage):
+        assert isinstance(stage, SequenceStage)
+        self._stages.append(stage)
+
+
+    def execute(self):
+        input_path = self._input_path
+
+        for stage in self._stages:
+            stage.execute(input_path)
+            input_path = stage.output_path
+
+
+if __name__ == '__main__':
+    ps = ProcessSequence(input='./cut_frames')
+    ps.add(DenoiseStage(sigma=15))
+    ps.execute()
