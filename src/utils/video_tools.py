@@ -1,7 +1,6 @@
 import os
 import glob
 
-import skvideo.io
 import cv2
 import ffmpeg
 import image_slicer
@@ -11,35 +10,29 @@ from PIL import Image
 IMG_EXTENTION = 'png'
 
 
-def get_nb_frames(video_path):
-    videometadata = cv2.VideoCapture("video.mp4")
-    nb_frames = int(videometadata.get(cv2.CAP_PROP_FRAME_COUNT))
-    return nb_frames
-
-
-def get_metadata(video_path):
-    return skvideo.io.ffprobe(video_path)
+def get_n_frames(video_path):
+    cap = cv2.VideoCapture(video_path)
+    n_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    return n_frames
 
 
 def get_resolution(video_path):
-    videometadata = skvideo.io.ffprobe(video_path)
-    width = int(videometadata['video']['@width'])
-    height = int(videometadata['video']['@height'])
+    cap = cv2.VideoCapture(video_path)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     return (width, height)
 
 
-def get_avg_fps(video_path): 
-    videometadata = skvideo.io.ffprobe(video_path)
-    avg_frame_rate = videometadata['video']['@avg_frame_rate']
-    frames_secs = avg_frame_rate.split('/')
-    avg_fps = int(frames_secs[0])/int(frames_secs[1])
-    return avg_fps
+def get_fps(video_path): 
+    cap = cv2.VideoCapture(video_path)
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    return fps
 
 
-def cut_frames(video_path, output_dir='./cut_frames/', nb_frames_cut=-1):
+def cut_frames(video_path, output_dir='./cut_frames/', n_frames_cut=-1):
     '''
         Cuts all frames from video by default. 
-        If nb_frames_cut is given then specified number of frames
+        If n_frames_cut is given then specified number of frames
          are cut with equal interval between these frames. 
     '''
 
@@ -47,19 +40,19 @@ def cut_frames(video_path, output_dir='./cut_frames/', nb_frames_cut=-1):
     out_path_pattern = output_dir + '%05d' + '.' + IMG_EXTENTION
     print(f'Images path pattern: {out_path_pattern}')
 
-    nb_frames = get_nb_frames(video_path)
+    n_frames = get_n_frames(video_path)
 
-    if 0 < nb_frames_cut < nb_frames:
-        thumbnail = int(nb_frames/nb_frames_cut) - 1
+    if 0 < n_frames_cut < n_frames:
+        thumbnail = int(n_frames/n_frames_cut) - 1
 
-        # ffmpeg -i <video_path> -vf thumbnail=<nb_frames/nb_frames_cut - 1>, setpts=N/TB -r 1 -vframes <nb_frames_cut> <output_dir>%05d.png
+        # ffmpeg -i <video_path> -vf thumbnail=<n_frames/n_frames_cut - 1>, setpts=N/TB -r 1 -vframes <n_frames_cut> <output_dir>%05d.png
         try:
             (
                 ffmpeg
                 .input(video_path)
                 .filter('thumbnail', thumbnail)
                 .filter('setpts', 'N/TB')
-                .output(out_path_pattern, r=1, vframes=nb_frames_cut)
+                .output(out_path_pattern, r=1, vframes=n_frames_cut)
                 .run(capture_stdout=True, capture_stderr=True)
             )
         except ffmpeg.Error as e:
@@ -141,19 +134,9 @@ def join_imgs(imgs_path, output_dir, split_factor):
         joined_img.save(output_dir + base_name + '.' + IMG_EXTENTION)
 
 
-def main():
-    video_path = '/run/media/alex/Data/video_enhancment/Demo2/hockey_1_7GB.mov'
-
-    # get_nb_frames(video_path) 
-    # print(get_resolution(video_path))
-    # print(get_avg_fps(video_path))
-    cut_frames(video_path)
-    # assemble_video_lossless('./cut_frames/', framerate=25)
-    split_imgs('./cut_frames/', './splited_frames/')
-    # join_imgs('./splited_frames/', './joined_frames/', 2)
-    # split_imgs('/home/alex/Desktop/1/', '/home/alex/Desktop/1/')
-    # join_imgs('/home/alex/Desktop/1/', './lol/', 4)
-
-
 if __name__ == '__main__':
-    main()
+    video_path = './example.mp4'
+
+    print(get_n_frames(video_path))
+    print(get_resolution(video_path))
+    print(get_fps(video_path))

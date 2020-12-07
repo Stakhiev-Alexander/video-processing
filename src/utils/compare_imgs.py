@@ -4,7 +4,6 @@ from skimage.io import imread, imsave
 import numpy as np
 import matplotlib.pyplot as plt
 
-from skimage import data, img_as_float
 from skimage.metrics import structural_similarity as ssim
 
 
@@ -31,15 +30,13 @@ def get_ssim(original_img_path, compare_img_paths):
 
     :return (dict{str: float}): mapped image's paths and SSIMs
     """
-    original_img = img_as_float(imread(original_img_path))
+    original_img = imread(original_img_path)
 
     compare_imgs_ssim = {}
 
     for img_path in compare_img_paths:
-        comp_img = img_as_float(imread(img_path))
-        compare_imgs_ssim[img_path] = ssim(original_img, comp_img, multichannel=True,
-                  data_range=comp_img.max() - comp_img.min())
-
+        comp_img = imread(img_path)
+        compare_imgs_ssim[img_path] = ssim(original_img, comp_img, multichannel=True)
 
     return compare_imgs_ssim
 
@@ -53,7 +50,7 @@ def plot_ssim_imgs(original_img_path, compare_img_paths, nrows, ncols):
     """
 
     figures = {}
-    original_img = img_as_float(imread(original_img_path))
+    original_img = imread(original_img_path)
     figures['Original image'] = original_img
     print(type(original_img))
 
@@ -62,7 +59,7 @@ def plot_ssim_imgs(original_img_path, compare_img_paths, nrows, ncols):
     for img_path, ssim in compare_imgs_ssim.items():
         img_name = os.path.basename(img_path)
         title = f'{img_name}; SSIM = {ssim:.2f}'
-        figures[title] = img_as_float(imread(img_path))
+        figures[title] = imread(img_path)
 
     _plot_figures(figures, nrows, ncols)    
 

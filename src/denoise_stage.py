@@ -34,4 +34,4 @@ class DenoiseStage(SequenceStage):
 
     @property
     def output_path(self):
-        return self._output_path      
+        return self._output_path

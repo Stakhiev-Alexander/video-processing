@@ -16,7 +16,7 @@ class UnknownInputType(Exception):
 
 class ProcessSequence(object):
     @staticmethod
-    def get_input_frames(input):
+    def get_input_frames_dir(input):
         if os.path.isdir(input):
             logger.info(f'Input dir: {input}')
             return input
@@ -34,8 +34,12 @@ class ProcessSequence(object):
             raise UnknownInputType
 
 
-    def __init__(self, input, stages=None):
-        self._input_path = self.__class__.get_input_frames(input)
+    def __init__(self, input_path, stages=None):
+        """
+        input_path (str): path to image sequence or video
+        stages (list<SequenceStage>): list of processing stages 
+        """
+        self._input_path = ProcessSequence.get_input_frames_dir(input_path)
         
         self._stages = []
         if stages:
