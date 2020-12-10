@@ -39,6 +39,7 @@ class NLMStage(SequenceStage):
         logger.info(f'Starting NLMStage\nInput path: {self._input_path}\nOutput path: {self._output_path}')
 
         imgs_paths = glob(self._input_path + '*.' + IMG_EXTENTION)
+        imgs_paths.sort()
         imgs = [cv.imread(path, self._img_mode) for path in imgs_paths[:3]]
 
         firstframe = cv.fastNlMeansDenoising(imgs[0], dst=None,

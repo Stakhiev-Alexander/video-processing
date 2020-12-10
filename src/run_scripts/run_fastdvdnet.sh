@@ -40,6 +40,6 @@ echo "output_path: $output_path";
 
 conda activate fastdvdnet
 
-python3 ./FastDVDNet/test_fastdvdnet.py --test_path $input_path --noise_sigma $sigma --save_path $output_path --model_file ./FastDVDNet/model.pth
+python3 ./src/nets/FastDVDNet/test_fastdvdnet.py --test_path $input_path --noise_sigma $sigma --save_path $output_path --model_file ./src/nets/FastDVDNet/model.pth
 
 exit 0 

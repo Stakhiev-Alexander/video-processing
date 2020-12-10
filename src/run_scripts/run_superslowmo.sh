@@ -45,6 +45,6 @@ echo "output_path: $output_path";
 
 conda activate superslomo
 
-python ./superslomo/video_to_slomo.py --checkpoint ./superslomo/SuperSloMo.ckpt --input_path input_path --sf factor --batch_size batch_size --output output_path
+python ./src/nets/superslomo/video_to_slomo.py --checkpoint ./src/nets/superslomo/SuperSloMo.ckpt --input_path input_path --sf factor --batch_size batch_size --output output_path
 
 exit 0 

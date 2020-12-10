@@ -6,13 +6,19 @@ function gdrive_download () {
   rm -rf /tmp/cookies.txt
 }
 
-git clone https://github.com/ZurMaD/fastdvdnet ./src/FastDVDNet
-git clone https://github.com/baowenbo/DAIN ./src/DAIN
-git clone https://github.com/Stakhiev-Alexander/Colab-Super-SloMo.git ./src/superslomo
+mkdir -p ./src/nets
 
-cd ./src/superslomo
-gdrive_download 1IvobLDbRiBgZr3ryCRrWL8xDbMZ-KnpF SuperSloMo.ckpt
+git clone https://github.com/baowenbo/DAIN ./src/nets/DAIN
+git clone https://github.com/Stakhiev-Alexander/Fast-SRGAN ./src/nets/Fast-SRGAN
 
+#git clone https://github.com/ZurMaD/fastdvdnet ./src/nets/FastDVDNet
+#git clone https://github.com/Stakhiev-Alexander/Colab-Super-SloMo.git ./src/nets/superslomo
+
+# cd ./src/superslomo
+# gdrive_download 1IvobLDbRiBgZr3ryCRrWL8xDbMZ-KnpF SuperSloMo.ckpt 
+
+rm ./src/nets/Fast-SRGAN/models/generator.h5
+gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./src/nets/Fast-SRGAN/models/generator.h5
 
 # git clone https://github.com/meisamrf/ivhc-estimator ./src/IVHC
 # mv ./src/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so 
