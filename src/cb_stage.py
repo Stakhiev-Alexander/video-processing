@@ -1,7 +1,7 @@
 import subprocess
 import os
 import shutil
-from golb import glob
+from glob import glob
 from pathlib import Path
 
 from tqdm import tqdm
@@ -20,7 +20,7 @@ class CBStage(SequenceStage):
     '''
     Color balance stage class
     '''
-    def __init__(self, percent, output_path='./cb_stage_output/'):
+    def __init__(self, percent=0.01, output_path='./cb_stage_output/'):
         self._percent= percent
         self._output_path = str(Path(output_path).absolute())
 
@@ -32,7 +32,8 @@ class CBStage(SequenceStage):
 
         base_path = Path(__file__).parent.absolute()
 
-        imgs_paths = glob(self._input_path + '*.' + IMG_EXTENTION)
+        print(self._input_path)
+        imgs_paths = glob(self._input_path + '/*.' + IMG_EXTENTION)
         imgs_paths.sort()
 
         # slices = find_scenes("../hockey17_sig15_sr.mp4")
@@ -43,7 +44,7 @@ class CBStage(SequenceStage):
             if isinstance(s, tuple):
                 imgs = []
                 for img_path in imgs_paths[slice(*s)]:
-                    imgs.append(cv2.imread(img_path))
+                    imgs.append(cv.imread(img_path))
                 out = cb_seq(imgs, 0.01)
                 for i, img in enumerate(out):
                     cv.imwrite(self._output_path + '/' + str(s[0] + i + 1).zfill(6) + '.' + IMG_EXTENTION, img)

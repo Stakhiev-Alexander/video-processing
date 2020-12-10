@@ -4,8 +4,11 @@ import os
 from sequence_stage_base import SequenceStage
 from denoise_stage import DenoiseStage
 from nlm_stage import NLMStage
+from cb_stage import CBStage
+from sr_stage import SRStage
 import process_sequence_logger as ps_logger
 from utils.video_tools import cut_frames
+from utils.video_tools import assemble_video_lossless
 
 
 logger = ps_logger.get_logger(__name__) 
@@ -64,6 +67,9 @@ class ProcessSequence(object):
 
 
 if __name__ == '__main__':
-    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/hockey_1_7GB.mov')
-    ps.add(NLMStage())
-    ps.execute()
+    #ps = ProcessSequence(input_path='/home/quadro/videoproc/video-processing/cb_stage_output/')
+    #ps.add(SRStage())
+    #ps.execute()
+
+    assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')
+
