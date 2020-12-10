@@ -3,6 +3,7 @@ import os
 
 from sequence_stage_base import SequenceStage
 from denoise_stage import DenoiseStage
+from nlm_stage import NLMStage
 import process_sequence_logger as ps_logger
 from utils.video_tools import cut_frames
 
@@ -16,18 +17,18 @@ class UnknownInputType(Exception):
 
 class ProcessSequence(object):
     @staticmethod
-    def get_input_frames_dir(input):
-        if os.path.isdir(input):
-            logger.info(f'Input dir: {input}')
-            return input
+    def get_input_frames_dir(input_path):
+        if os.path.isdir(input_path):
+            logger.info(f'Input dir: {input_path}')
+            return input_path
 
-        mimestart = mimetypes.guess_type(input)[0] 
+        mimestart = mimetypes.guess_type(input_path)[0] 
         if mimestart is None:
             raise UnknownInputType  
 
         file_type = mimestart.split('/')[0]
         if file_type == 'video':
-            input_dir = cut_frames(input)
+            input_dir = cut_frames(input_path)
             logger.info(f'Input dir: {input_dir}')
             return input_dir
         else:
@@ -63,6 +64,6 @@ class ProcessSequence(object):
 
 
 if __name__ == '__main__':
-    ps = ProcessSequence(input='./cut_frames')
-    ps.add(DenoiseStage(sigma=15))
+    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/hockey_1_7GB.mov')
+    ps.add(NLMStage())
     ps.execute()
