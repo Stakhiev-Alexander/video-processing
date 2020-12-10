@@ -1,0 +1,9 @@
+name: fast_srgan
+channels:
+  - anaconda
+  - conda-forge
+  - defaults
+dependencies:
+  - numpy
+  - opencv
+  - tensorflow=2.0.3
