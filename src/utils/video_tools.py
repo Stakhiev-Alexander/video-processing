@@ -1,5 +1,6 @@
 import os
 import glob
+import subprocess
 
 import cv2
 import ffmpeg
@@ -130,6 +131,18 @@ def join_imgs(imgs_path, output_dir, split_factor):
         
         joined_img = image_slicer.join(tiles)
         joined_img.save(output_dir + base_name + '.' + IMG_EXTENTION)
+
+
+    def copy_audio(input_video, output_video):
+        """
+        Copy audio stream from one video to another
+        
+        :param input_video: video to take audio stream from
+        :param output_video: video to add audio stream to
+        """
+        subprocess.run(f"ffmpeg -i {input_video} -vn -acodec copy tmp.mp3")
+        subprocess.run(f"ffmpeg -y -i {output_video} -i audio.mp3 -map 0 -map 1:a -c:v copy -shortest {output_video}")
+        os.remove("tmp.mp3")
 
 
 if __name__ == '__main__':
