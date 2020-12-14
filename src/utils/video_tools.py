@@ -74,16 +74,16 @@ def cut_frames(video_path, output_dir='./cut_frames/', n_frames_cut=-1):
     return output_dir    
     
   
-def assemble_video_lossless(imgs_path, framerate, filename='output', output_dir='./'):
+def assemble_video(imgs_path, framerate, filename='output', output_dir='./'):
     in_path_pattern = imgs_path + '*.' + IMG_EXTENTION
     out_path = output_dir + filename + '.mkv'
 
-    # ffmpeg -framerate <framerate> -i <imgs_path>/%05d.png -c:v copy <output_dir>/<filename>.mkv
+    # ffmpeg -framerate 50 -i ./sr_stage_output/%15d.png -c:v libx264 -pix_fmt yuv420p <output_dir>/<filename>.mkv
     try:
         (
             ffmpeg
             .input(in_path_pattern, pattern_type='glob', framerate=framerate)
-            .output(out_path, vcodec='copy')
+            .output(out_path, vcodec='libx264', pix_fmt='yuv420p')
             .run(capture_stdout=True, capture_stderr=True)
         )
     except ffmpeg.Error as e:
@@ -110,8 +110,7 @@ def join_imgs(imgs_path, output_dir, split_factor):
 
     for base_name in base_names:
         tiles = []
-        i = 0
-        for img_path in glob.glob(imgs_path +  f'{base_name}_*.' + IMG_EXTENTION):
+        for i, img_path in enumerate(glob.glob(imgs_path +  f'{base_name}_*.' + IMG_EXTENTION)):
             pos = image_slicer.get_image_column_row(os.path.basename(img_path))
             im = Image.open(img_path)
             position_xy = [0, 0]
@@ -128,7 +127,6 @@ def join_imgs(imgs_path, output_dir, split_factor):
                     filename=img_path,
                 )
             )
-            i = i + 1
         
         joined_img = image_slicer.join(tiles)
         joined_img.save(output_dir + base_name + '.' + IMG_EXTENTION)
