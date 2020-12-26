@@ -6,19 +6,28 @@ function gdrive_download () {
   rm -rf /tmp/cookies.txt
 }
 
+##
+##  Nets download
+##
 mkdir -p ./src/nets
 
 git clone https://github.com/baowenbo/DAIN ./src/nets/DAIN
 git clone https://github.com/Stakhiev-Alexander/Fast-SRGAN ./src/nets/Fast-SRGAN
+git clone https://github.com/Atlas200dk/sample-imageinpainting-HiFill ./src/nets/HiFill 
 
-#git clone https://github.com/ZurMaD/fastdvdnet ./src/nets/FastDVDNet
-#git clone https://github.com/Stakhiev-Alexander/Colab-Super-SloMo.git ./src/nets/superslomo
+git clone https://github.com/Egazaga/pytorch-deeplab-xception.git ./src/nets/DeepLab
+cd ./src/nets/DeepLab
+git branch infer-triple-input
+cd ../../../
 
-# cd ./src/superslomo
-# gdrive_download 1IvobLDbRiBgZr3ryCRrWL8xDbMZ-KnpF SuperSloMo.ckpt 
+##
+##  Weights download
+##
 
-rm ./src/nets/Fast-SRGAN/models/generator.h5
-gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./src/nets/Fast-SRGAN/models/generator.h5
+# gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./src/nets/DeepLab
+
+# rm ./src/nets/Fast-SRGAN/models/generator.h5
+# gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./src/nets/Fast-SRGAN/models/generator.h5
 
 # git clone https://github.com/meisamrf/ivhc-estimator ./src/IVHC
 # mv ./src/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so 

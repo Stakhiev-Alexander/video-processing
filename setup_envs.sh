@@ -9,4 +9,7 @@
 #fast-srgan
 conda env create -f ./envs/fast_srgan_environment.yaml
 
+#deeplab and hifill
+conda env create -f ./envs/dl_hifill_environment.yaml
+
 exit 0 
