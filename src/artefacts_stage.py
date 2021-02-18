@@ -21,7 +21,7 @@ class ArtefactsStage(SequenceStage):
         Path(self._output_path).mkdir(exist_ok=True)
 
         base_path = Path(__file__).parent.absolute()
-        script_path = str(base_path / 'run_scripts' / 'run_dl_hifill.sh')
+        script_path = str(base_path / 'run_scripts' / 'run_artefacts.sh')
         parameters = f'--input_path {self._input_path} --output_path {self._output_path}'
         run_cmd = script_path + ' ' + parameters
 

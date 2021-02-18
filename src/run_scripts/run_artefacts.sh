@@ -29,8 +29,8 @@ echo "input_path: $input_path";
 echo "output_path: $output_path";
 
 source ~/anaconda3/etc/profile.d/conda.sh
-conda activate dl_hifill
+conda activate artefacts
 
-python3 ./src/nets/infer_dl_hifill.py --image_dir $input_path --output_dir $output_path
+python3 ./src/nets/infer_artefacts.py --image_dir $input_path --output_dir $output_path
 
 exit 0 
