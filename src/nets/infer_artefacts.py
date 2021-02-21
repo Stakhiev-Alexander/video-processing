@@ -7,9 +7,9 @@ import cv2
 import numpy as np
 from tqdm.contrib import tzip
 
-from src.nets.DeepLab.infer_prob import infer_dl
-from src.nets.RAFT.demo import infer_raft
-from src.nets.flownet.infer_flownet import infer_flownet
+from DeepLab.infer_prob import infer_dl
+from RAFT.demo import infer_raft
+from flownet.infer_flownet import infer_flownet
 
 
 def read_flow(fn):
@@ -53,8 +53,8 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--in-path', type=str, help='image to test')
-    parser.add_argument('--out-path', type=str, help='mask image to save')
+    parser.add_argument('--in-path', '-i', type=str, help='image to test')
+    parser.add_argument('--out-path', '-o', type=str, help='mask image to save')
     args = parser.parse_args()
 
     first_inter = "first_inter/"

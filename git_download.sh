@@ -31,14 +31,14 @@ git clone https://github.com/Egazaga/flownet2-pytorch ./src/nets/flownet
 # git clone https://github.com/meisamrf/ivhc-estimator ./src/net/IVHC
 # mv ./src/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
 
-#cd ./src/nets/RAFT
-#download_models.sh
-#cd ../../..
+cd ./src/nets/RAFT
+source download_models.sh
+cd ../../..
 
-# gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./src/nets/DeepLab
+gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./src/nets/DeepLab/DLv3+torch.pth.tar
 
-#cd ./src/nets/flownet
-#install.sh
-#cd ../../..
+cd ./src/nets/flownet
+source install.sh
+cd ../../..
 
 exit 0 

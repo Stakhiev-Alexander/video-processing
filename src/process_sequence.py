@@ -6,9 +6,10 @@ from denoise_stage import DenoiseStage
 from nlm_stage import NLMStage
 from cb_stage import CBStage
 from sr_stage import SRStage
+from artefacts_stage import ArtefactsStage
 import process_sequence_logger as ps_logger
 from utils.video_tools import cut_frames
-from utils.video_tools import assemble_video_lossless
+from utils.video_tools import assemble_video
 
 
 logger = ps_logger.get_logger(__name__) 
@@ -25,9 +26,9 @@ class ProcessSequence(object):
             logger.info(f'Input dir: {input_path}')
             return input_path
 
-        mimestart = mimetypes.guess_type(input_path)[0] 
+        mimestart = mimetypes.guess_type(input_path)[0]
         if mimestart is None:
-            raise UnknownInputType  
+            raise UnknownInputType
 
         file_type = mimestart.split('/')[0]
         if file_type == 'video':
@@ -67,9 +68,9 @@ class ProcessSequence(object):
 
 
 if __name__ == '__main__':
-    #ps = ProcessSequence(input_path='/home/quadro/videoproc/video-processing/cb_stage_output/')
-    #ps.add(SRStage())
-    #ps.execute()
+    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/test_2_5K_frames/')
+    ps.add(ArtefactsStage())
+    ps.execute()
 
-    assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')
+    #assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')
 

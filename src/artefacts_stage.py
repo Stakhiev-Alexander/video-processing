@@ -26,6 +26,7 @@ class ArtefactsStage(SequenceStage):
         run_cmd = script_path + ' ' + parameters
 
         try:
+            print(run_cmd)
             result = subprocess.run([run_cmd], shell=True, encoding='utf-8', check=True)  
         except subprocess.CalledProcessError as err:
             logger.error(err)
