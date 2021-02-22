@@ -31,7 +31,7 @@ if [ ! -e ./nets/Fast-SRGAN/models/generator.h5 ]; then
 fi
 
 git clone https://github.com/meisamrf/ivhc-estimator ./nets/IVHC
-mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./nets/IVHC/ivhc.cpython-36m-x86_64-linux-gnu.so
+cp ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./nets/IVHC/ivhc.cpython-36m-x86_64-linux-gnu.so
 
 if [ ! -e ./nets/RIFE/train_log/unet.pkl ]; then
   gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./nets/RIFE/model.zip
@@ -45,8 +45,17 @@ if [ ! -e ./nets/DeepLab/DLv3+torch.pth.tar ]; then
   gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./nets/DeepLab/DLv3+torch.pth.tar
 fi
 
-cd ./nets/flownet
-source install.sh
-cd ../..
+#cd ./nets/flownet
+#source install.sh
+#cd ../..
+
+##
+##  Make scripts executable
+##
+
+for filename in run_scripts/*.sh; do
+    [ -e "$filename" ] || continue
+    chmod +x filename
+done
 
 exit 0 
