@@ -11,7 +11,7 @@ IMG_EXTENTION = 'png'
 
 
 class NLMStage(SequenceStage):
-    def __init__(self, output_path='./nlm_stage_output/',
+    def __init__(self, output_path='./output/nlm_stage_output/',
                  h=7,
                  templateWindowSize=9,
                  searchWindowSize=11,

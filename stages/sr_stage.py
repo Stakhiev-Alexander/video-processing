@@ -9,7 +9,7 @@ logger = logger.get_logger(__name__)
 
 
 class SRStage(SequenceStage):
-    def __init__(self, output_path='./sr_stage_output/'):
+    def __init__(self, output_path='./output/sr_stage_output/'):
         self._output_path = str(Path(output_path).absolute())
 
     def execute(self, input_path):

@@ -17,7 +17,7 @@ class CBStage(SequenceStage):
     '''
     Color balance stage class
     '''
-    def __init__(self, percent=0.01, output_path='./cb_stage_output/'):
+    def __init__(self, percent=0.01, output_path='./output/cb_stage_output/'):
         self._percent= percent
         self._output_path = str(Path(output_path).absolute())
 

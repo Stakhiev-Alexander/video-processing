@@ -9,7 +9,7 @@ logger = logger.get_logger(__name__)
 
 
 class DenoiseStage(SequenceStage):
-    def __init__(self, sigma, output_path='./denoise_stage_output/'):
+    def __init__(self, sigma, output_path='./output/denoise_stage_output/'):
         self._sigma = sigma
         self._output_path = str(Path(output_path).absolute())
 

@@ -9,7 +9,7 @@ logger = logger.get_logger(__name__)
 
 
 class ArtefactsStage(SequenceStage):
-    def __init__(self, output_path='./artefacts_stage_output/'):
+    def __init__(self, output_path='./output/artefacts_stage_output/'):
         self._output_path = str(Path(output_path).absolute())
 
     def execute(self, input_path):
