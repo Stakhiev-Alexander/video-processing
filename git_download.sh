@@ -25,18 +25,25 @@ git clone https://github.com/Egazaga/flownet2-pytorch ./nets/flownet
 ##  Weights download
 ##
 
-# rm ./nets/Fast-SRGAN/models/generator.h5
-# gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./nets/Fast-SRGAN/models/generator.h5
+if [ ! -e ./nets/Fast-SRGAN/models/generator.h5 ]; then
+  mkdir -p ./nets/Fast-SRGAN/models
+  gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./nets/Fast-SRGAN/models/generator.h5
+fi
 
-# git clone https://github.com/meisamrf/ivhc-estimator ./nets/IVHC
-# mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
+git clone https://github.com/meisamrf/ivhc-estimator ./nets/IVHC
+mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
 
-gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./nets/RIFE/model.zip
-cd ./nets/RIFE/
-unzip model.zip
-cd ../..
+if [ ! -e ./nets/RIFE/train_log/unet.pkl ]; then
+  gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./nets/RIFE/model.zip
+  cd ./nets/RIFE/
+  unzip model.zip
+  rm model.zip
+  cd ../..
+fi
 
-gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./nets/DeepLab/DLv3+torch.pth.tar
+if [ ! -e ./nets/DeepLab/DLv3+torch.pth.tar ]; then
+  gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./nets/DeepLab/DLv3+torch.pth.tar
+fi
 
 cd ./nets/flownet
 source install.sh
