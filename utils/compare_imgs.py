@@ -1,9 +1,7 @@
 import os
 
-from skimage.io import imread, imsave
-import numpy as np
 import matplotlib.pyplot as plt
-
+from skimage.io import imread
 from skimage.metrics import structural_similarity as ssim
 
 

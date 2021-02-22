@@ -1,13 +1,11 @@
-import subprocess
-import os
 import shutil
+import subprocess
 from pathlib import Path
 
-from sequence_stage_base import SequenceStage
-import utils.logger as ps_logger
+import utils.logger as logger
+from stages.sequence_stage_base import SequenceStage
 
-
-logger = ps_logger.get_logger(__name__) 
+logger = logger.get_logger(__name__)
 
 
 class DenoiseStage(SequenceStage):
@@ -21,8 +19,7 @@ class DenoiseStage(SequenceStage):
         shutil.rmtree(self._output_path, ignore_errors=True)
         Path(self._output_path).mkdir(exist_ok=True)
 
-        base_path = Path(__file__).parent.absolute()
-        script_path = str(base_path / 'run_scripts' / 'run_fastdvdnet.sh')
+        script_path = '../run_scripts/run_fastdvdnet.sh'
         parameters = f'--input_path {self._input_path} --sigma {self._sigma} --output_path {self._output_path}'
         run_cmd = script_path + ' ' + parameters
 

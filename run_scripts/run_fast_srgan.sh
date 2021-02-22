@@ -31,6 +31,6 @@ echo "output_path: $output_path";
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate fast_srgan
 
-python3 ./src/nets/Fast-SRGAN/infer.py --image_dir $input_path --output_dir $output_path
+python3 ./nets/Fast-SRGAN/infer.py --image_dir $input_path --output_dir $output_path
 
 exit 0 

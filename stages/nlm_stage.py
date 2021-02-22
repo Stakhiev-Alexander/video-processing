@@ -1,34 +1,27 @@
-import subprocess
-import os
-from glob import glob
 import shutil
-from pathlib import Path
+from glob import glob
 
 from tqdm import tqdm
-import cv2 as cv
-import numpy as np
 
-from sequence_stage_base import SequenceStage
-import utils.logger as ps_logger
+import utils.logger as logger
+from stages.sequence_stage_base import SequenceStage
 
-
-logger = ps_logger.get_logger(__name__) 
+logger = logger.get_logger(__name__)
 IMG_EXTENTION = 'png'
 
 
 class NLMStage(SequenceStage):
-    def __init__(self, output_path='./nlm_stage_output/', 
-                    h=7,
-                    templateWindowSize=9,
-                    searchWindowSize=11,
-                    grayscale=True):
+    def __init__(self, output_path='./nlm_stage_output/',
+                 h=7,
+                 templateWindowSize=9,
+                 searchWindowSize=11,
+                 grayscale=True):
         self._output_path = str(Path(output_path).absolute())
         self._h = h
         self._templateWindowSize = templateWindowSize
         self._searchWindowSize = searchWindowSize
         if grayscale:
             self._img_mode = cv.IMREAD_GRAYSCALE
-
 
     def execute(self, input_path):
         self._input_path = str(Path(input_path).absolute()) + '/'

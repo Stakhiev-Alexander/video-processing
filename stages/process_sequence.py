@@ -1,12 +1,11 @@
 import mimetypes
 import os
 
-from .utils import logger as ps_logger
-from artefacts_stage import ArtefactsStage
-from sequence_stage_base import SequenceStage
+from stages.sequence_stage_base import SequenceStage
+from utils import logger as logger
 from utils.video_tools import cut_frames
 
-logger = ps_logger.get_logger(__name__)
+logger = logger.get_logger(__name__)
 
 
 class UnknownInputType(Exception):
@@ -56,11 +55,3 @@ class ProcessSequence(object):
         for stage in self._stages:
             stage.execute(input_path)
             input_path = stage.output_path
-
-
-if __name__ == '__main__':
-    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/test_2_5K_frames/')
-    ps.add(ArtefactsStage())
-    ps.execute()
-
-    # assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')

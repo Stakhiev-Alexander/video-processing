@@ -5,6 +5,9 @@ while [ "$1" != "" ]; do
         -i | --input_path )     shift
                                 input_path="$1"
                                 ;;
+        -s | --sigma )          shift
+                                sigma="$1"
+                                ;;
         -o | --output_path )    shift
                                 output_path="$1"
                                 ;;
@@ -19,6 +22,11 @@ if [ -z "$input_path" ]; then
     exit 1
 fi
 
+if [ -z "$sigma" ]; then
+    echo "sigma unset"
+    exit 1
+fi
+
 if [ -z "$output_path" ]; then
     echo "output_path unset"
     exit 1
@@ -26,11 +34,12 @@ fi
 
 
 echo "input_path: $input_path";
+echo "sigma: $sigma";
 echo "output_path: $output_path";
 
-source ~/anaconda3/etc/profile.d/conda.sh
-conda activate artefacts
 
-python3 ./src/nets/infer_artefacts.py -i $input_path -o $output_path
+conda activate fastdvdnet
+
+python3 ./nets/FastDVDNet/test_fastdvdnet.py --test_path $input_path --noise_sigma $sigma --save_path $output_path --model_file ./nets/FastDVDNet/model.pth
 
 exit 0 

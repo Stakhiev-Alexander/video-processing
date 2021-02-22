@@ -1,18 +1,15 @@
-import subprocess
-import os
 import shutil
 from glob import glob
 from pathlib import Path
 
-from tqdm import tqdm
 import cv2 as cv
+from tqdm import tqdm
 
-from sequence_stage_base import SequenceStage
-import utils.logger as ps_logger
+import utils.logger as logger
+from stages.sequence_stage_base import SequenceStage
 from utils.cb_utils import cb_seq
 
-
-logger = ps_logger.get_logger(__name__) 
+logger = logger.get_logger(__name__)
 IMG_EXTENTION = 'png'
 
 

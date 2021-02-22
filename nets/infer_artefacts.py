@@ -5,14 +5,14 @@ from glob import glob
 
 import cv2
 import numpy as np
-from ..utils import logger as ps_logger
-from DeepLab.infer_prob import infer_dl
-from flownet.infer_flownet import infer_flownet
 from tqdm.contrib import tzip
 
-from src.nets.RIFE.inference_imgs import infer_rife
+import utils.logger as logger
+from nets.DeepLab.infer_prob import infer_dl
+from nets.RIFE.inference_imgs import infer_rife
+from nets.flownet.infer_flownet import infer_flownet
 
-logger = ps_logger.get_logger(__name__)
+logger = logger.get_logger(__name__)
 
 
 def read_flow(fn):

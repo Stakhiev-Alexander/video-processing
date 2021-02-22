@@ -9,37 +9,37 @@ function gdrive_download () {
 ##
 ##  Nets download
 ##
-mkdir -p ./src/nets
+mkdir -p ./nets
 
-git clone https://github.com/Stakhiev-Alexander/Fast-SRGAN ./src/nets/Fast-SRGAN
-git clone https://github.com/Egazaga/arXiv2020-RIFE ./src/nets/RIFE
+git clone https://github.com/Stakhiev-Alexander/Fast-SRGAN ./nets/Fast-SRGAN
+git clone https://github.com/Egazaga/arXiv2020-RIFE ./nets/RIFE
 
-git clone https://github.com/Egazaga/pytorch-deeplab-xception.git ./src/nets/DeepLab
-cd ./src/nets/DeepLab
+git clone https://github.com/Egazaga/pytorch-deeplab-xception.git ./nets/DeepLab
+cd ./nets/DeepLab
 git checkout infer-triple-input
-cd ../../../
+cd ../..
 
-git clone https://github.com/Egazaga/flownet2-pytorch ./src/nets/flownet
+git clone https://github.com/Egazaga/flownet2-pytorch ./nets/flownet
 
 ##
 ##  Weights download
 ##
 
-# rm ./src/nets/Fast-SRGAN/models/generator.h5
-# gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./src/nets/Fast-SRGAN/models/generator.h5
+# rm ./nets/Fast-SRGAN/models/generator.h5
+# gdrive_download 15iVCa-GNYbakU_9yINMrDjWAzVo3HVRf ./nets/Fast-SRGAN/models/generator.h5
 
-# git clone https://github.com/meisamrf/ivhc-estimator ./src/net/IVHC
-# mv ./src/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
+# git clone https://github.com/meisamrf/ivhc-estimator ./nets/IVHC
+# mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
 
-gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./src/nets/RIFE/model.zip
-cd ./src/nets/RIFE/
+gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./nets/RIFE/model.zip
+cd ./nets/RIFE/
 unzip model.zip
-cd ../../..
+cd ../..
 
-gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./src/nets/DeepLab/DLv3+torch.pth.tar
+gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./nets/DeepLab/DLv3+torch.pth.tar
 
-cd ./src/nets/flownet
+cd ./nets/flownet
 source install.sh
-cd ../../..
+cd ../..
 
 exit 0 

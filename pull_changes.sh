@@ -3,21 +3,21 @@
 
 git pull
 
-cd ./src/nets/Fast-SRGAN
+cd ./nets/Fast-SRGAN
 git pull
-cd ../../../
+cd ../..
 
-cd ./src/nets/RIFE
+cd ./nets/RIFE
 git pull
-cd ../../../
+cd ../..
 
-cd ./src/nets/DeepLab
+cd ./nets/DeepLab
 git pull
-cd ../../../
+cd ../..
 
-cd ./src/nets/flownet
+cd ./nets/flownet
 git pull
-cd ../../../
+cd ../..
 
 
 exit 0

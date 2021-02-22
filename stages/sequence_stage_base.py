@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class SequenceStage(ABC):
     @abstractmethod
-    def execute():
+    def execute(self, input_path):
         pass
 
     @property

@@ -1,12 +1,11 @@
-import os
 import glob
+import os
 import subprocess
 
 import cv2
 import ffmpeg
 import image_slicer
 from PIL import Image
-
 
 IMG_EXTENTION = 'png'
 
