@@ -1,6 +1,7 @@
 import argparse
 import os
 import shutil
+import pathlib
 from glob import glob
 import sys
 
@@ -59,6 +60,9 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
 
 if __name__ == '__main__':
     logger.info("Starting artefacts stage")
+    base_path = str(pathlib.Path(__file__).parent.absolute())
+    print(base_path)
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--in-path', '-i', type=str, help='image to test')
     parser.add_argument('--out-path', '-o', type=str, help='mask image to save')
@@ -86,15 +90,15 @@ if __name__ == '__main__':
 
     shutil.rmtree(first_inter, ignore_errors=True)
 
-    dl_out = "dl_out/"
+    dl_out = base_path + "/../dl_out/"
     shutil.rmtree(dl_out, ignore_errors=True)
     os.makedirs(dl_out, exist_ok=True)
     logger.info("Starting deeplab")
     infer_dl(args.in_path, dl_out)
 
-    flownet_forward = "flownet_forward/"
-    flownet_reverse = "flownet_reverse/"
-    flownet_out = "flownet_out/"
+    flownet_forward = base_path + "/../flownet_forward/"
+    flownet_reverse = base_path + "/../flownet_reverse/"
+    flownet_out = base_path + "/../flownet_out/"
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
     shutil.rmtree(flownet_out, ignore_errors=True)

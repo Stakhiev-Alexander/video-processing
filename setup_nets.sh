@@ -45,6 +45,18 @@ if [ ! -e ./nets/DeepLab/DLv3+torch.pth.tar ]; then
   gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./nets/DeepLab/DLv3+torch.pth.tar
 fi
 
+if [ ! -e ./nets/flownet/FlowNet2_checkpoint.pth.tar ]; then
+  gdrive_download 1hF8vS6YeHkx3j2pfCeQqqZGwA_PJq_Da ./nets/flownet/FlowNet2_checkpoint.pth.tar
+fi
+
+if [ ! -e ./nets/flownet/FlowNet2-CSS_checkpoint.pth.tar ]; then
+  gdrive_download 157zuzVf4YMN6ABAQgZc8rRmR5cgWzSu8  ./nets/flownet/FlowNet2-CSS_checkpoint.pth.tar 
+fi
+
+if [ ! -e ./nets/flownet/FlowNet2-CS_checkpoint.pth.tar ]; then
+  gdrive_download 1iBJ1_o7PloaINpa8m7u_7TsLCX0Dt_jS  ./nets/flownet/FlowNet2-CS_checkpoint.pth.tar
+fi
+
 #cd ./nets/flownet
 #source install.sh
 #cd ../..
