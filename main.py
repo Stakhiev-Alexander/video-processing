@@ -2,7 +2,7 @@ from stages.artefacts_stage import ArtefactsStage
 from stages.process_sequence import ProcessSequence
 
 if __name__ == '__main__':
-    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/test_2_5K_frames/')
+    ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/small2_5/')
     ps.add(ArtefactsStage())
     ps.execute()
 

@@ -31,6 +31,6 @@ echo "output_path: $output_path";
 source ~/anaconda3/etc/profile.d/conda.sh
 conda activate artefacts
 
-python3 ./nets/infer_artefacts.py -i $input_path -o $output_path
+python3 nets/infer_artefacts.py -i $input_path -o $output_path
 
 exit 0 

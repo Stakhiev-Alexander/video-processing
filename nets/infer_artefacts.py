@@ -2,6 +2,9 @@ import argparse
 import os
 import shutil
 from glob import glob
+import sys
+
+sys.path.append(sys.path[0] + '/..')
 
 import cv2
 import numpy as np
@@ -77,8 +80,8 @@ if __name__ == '__main__':
     logger.info("Starting second interpolation")
     infer_rife(in_path=first_inter, out_path=second_inter, keep_source_imgs=True, starting_index=1)
 
-    shutil.copy(sorted(os.listdir(args.in_path))[0], second_inter + str(0).zfill(6) + ".png")
-    shutil.copy(sorted(os.listdir(args.in_path))[-1],
+    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[0], second_inter + str(0).zfill(6) + ".png")
+    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[-1],
                 second_inter + str(len(os.listdir(second_inter))).zfill(6) + ".png")
 
     shutil.rmtree(first_inter, ignore_errors=True)
