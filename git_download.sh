@@ -31,7 +31,7 @@ if [ ! -e ./nets/Fast-SRGAN/models/generator.h5 ]; then
 fi
 
 git clone https://github.com/meisamrf/ivhc-estimator ./nets/IVHC
-mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
+mv ./nets/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./nets/IVHC/ivhc.cpython-36m-x86_64-linux-gnu.so
 
 if [ ! -e ./nets/RIFE/train_log/unet.pkl ]; then
   gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./nets/RIFE/model.zip

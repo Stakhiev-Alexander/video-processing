@@ -14,11 +14,10 @@ class ArtefactsStage(SequenceStage):
 
     def execute(self, input_path):
         self._input_path = str(Path(input_path).absolute())
-        Path(self._input_path).mkdir(exist_ok=True)
         shutil.rmtree(self._output_path, ignore_errors=True)
-        Path(self._output_path).mkdir(exist_ok=True)
+        Path(self._output_path).mkdir(exist_ok=True, parents=True)
 
-        script_path = '../run_scripts/run_artefacts.sh'
+        script_path = './run_scripts/run_artefacts.sh'
         parameters = f'--input_path {self._input_path} --output_path {self._output_path}'
         run_cmd = script_path + ' ' + parameters
 
