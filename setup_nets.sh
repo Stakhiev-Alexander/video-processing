@@ -57,5 +57,3 @@ for filename in run_scripts/*.sh; do
     [ -e "$filename" ] || continue
     chmod +x "$filename"
 done
-
-exit 0 

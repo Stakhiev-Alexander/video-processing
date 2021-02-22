@@ -18,6 +18,3 @@ cd ../..
 cd ./nets/flownet
 git pull
 cd ../..
-
-
-exit 0

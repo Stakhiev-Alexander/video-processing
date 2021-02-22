@@ -11,5 +11,3 @@ conda env create -f ./envs/fast_srgan_environment.yaml
 
 #artefacts
 conda env create -f ./envs/artefacts_environment.yaml
-
-exit 0 
