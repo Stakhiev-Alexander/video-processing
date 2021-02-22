@@ -12,7 +12,7 @@ function gdrive_download () {
 mkdir -p ./src/nets
 
 git clone https://github.com/Stakhiev-Alexander/Fast-SRGAN ./src/nets/Fast-SRGAN
-git clone https://github.com/Egazaga/RAFT ./src/nets/RAFT
+git clone https://github.com/Egazaga/arXiv2020-RIFE ./src/nets/RIFE
 
 git clone https://github.com/Egazaga/pytorch-deeplab-xception.git ./src/nets/DeepLab
 cd ./src/nets/DeepLab
@@ -31,8 +31,9 @@ git clone https://github.com/Egazaga/flownet2-pytorch ./src/nets/flownet
 # git clone https://github.com/meisamrf/ivhc-estimator ./src/net/IVHC
 # mv ./src/IVHC/Python/libs/ivhc.cpython-36m-x86_64-linux-gnu.so ./ivhc.cpython-36m-x86_64-linux-gnu.so
 
-cd ./src/nets/RAFT
-source download_models.sh
+gdrive_download 1wsQIhHZ3Eg4_AfCXItFKqqyDMB4NS0Yd ./src/nets/RIFE/model.zip
+cd ./src/nets/RIFE/
+unzip model.zip
 cd ../../..
 
 gdrive_download 1OJgJRlRrJG9HV28RTJlGV9VsCfRhYabD ./src/nets/DeepLab/DLv3+torch.pth.tar

@@ -1,18 +1,12 @@
 import mimetypes
 import os
 
-from sequence_stage_base import SequenceStage
-from denoise_stage import DenoiseStage
-from nlm_stage import NLMStage
-from cb_stage import CBStage
-from sr_stage import SRStage
+from .utils import logger as ps_logger
 from artefacts_stage import ArtefactsStage
-import process_sequence_logger as ps_logger
+from sequence_stage_base import SequenceStage
 from utils.video_tools import cut_frames
-from utils.video_tools import assemble_video
 
-
-logger = ps_logger.get_logger(__name__) 
+logger = ps_logger.get_logger(__name__)
 
 
 class UnknownInputType(Exception):
@@ -38,26 +32,23 @@ class ProcessSequence(object):
         else:
             raise UnknownInputType
 
-
     def __init__(self, input_path, stages=None):
         """
         input_path (str): path to image sequence or video
         stages (list<SequenceStage>): list of processing stages 
         """
         self._input_path = ProcessSequence.get_input_frames_dir(input_path)
-        
+
         self._stages = []
         if stages:
-          if not isinstance(stages, (list, tuple)):
-            stages = [stages]
-          for stage in stages:
-            self.add(stage)
-
+            if not isinstance(stages, (list, tuple)):
+                stages = [stages]
+            for stage in stages:
+                self.add(stage)
 
     def add(self, stage):
         assert isinstance(stage, SequenceStage)
         self._stages.append(stage)
-
 
     def execute(self):
         input_path = self._input_path
@@ -72,5 +63,4 @@ if __name__ == '__main__':
     ps.add(ArtefactsStage())
     ps.execute()
 
-    #assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')
-
+    # assemble_video_lossless(imgs_path='/home/quadro/videoproc/video-processing/sr_stage_output/', framerate=25,filename='hockey_nlm_cb_sr')

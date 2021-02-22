@@ -4,7 +4,7 @@ import shutil
 from pathlib import Path
 
 from sequence_stage_base import SequenceStage
-import process_sequence_logger as ps_logger
+import utils.logger as ps_logger
 
 
 logger = ps_logger.get_logger(__name__) 

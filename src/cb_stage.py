@@ -8,7 +8,7 @@ from tqdm import tqdm
 import cv2 as cv
 
 from sequence_stage_base import SequenceStage
-import process_sequence_logger as ps_logger
+import utils.logger as ps_logger
 from utils.cb_utils import cb_seq
 
 

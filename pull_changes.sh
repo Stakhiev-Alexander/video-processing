@@ -7,7 +7,7 @@ cd ./src/nets/Fast-SRGAN
 git pull
 cd ../../../
 
-cd ./src/nets/RAFT
+cd ./src/nets/RIFE
 git pull
 cd ../../../
 

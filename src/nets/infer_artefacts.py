@@ -5,11 +5,14 @@ from glob import glob
 
 import cv2
 import numpy as np
+from ..utils import logger as ps_logger
+from DeepLab.infer_prob import infer_dl
+from flownet.infer_flownet import infer_flownet
 from tqdm.contrib import tzip
 
-from DeepLab.infer_prob import infer_dl
-from RAFT.demo import infer_raft
-from flownet.infer_flownet import infer_flownet
+from src.nets.RIFE.inference_imgs import infer_rife
+
+logger = ps_logger.get_logger(__name__)
 
 
 def read_flow(fn):
@@ -52,6 +55,7 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
 
 
 if __name__ == '__main__':
+    logger.info("Starting artefacts stage")
     parser = argparse.ArgumentParser()
     parser.add_argument('--in-path', '-i', type=str, help='image to test')
     parser.add_argument('--out-path', '-o', type=str, help='mask image to save')
@@ -59,34 +63,30 @@ if __name__ == '__main__':
 
     first_inter = "first_inter/"
     second_inter = "second_inter/"
-    raft_out = "raft_out/"
 
     shutil.rmtree(first_inter, ignore_errors=True)
     shutil.rmtree(second_inter, ignore_errors=True)
-    shutil.rmtree(raft_out, ignore_errors=True)
     shutil.rmtree(args.out_path, ignore_errors=True)
 
     os.makedirs(first_inter, exist_ok=True)
     os.makedirs(second_inter, exist_ok=True)
-    os.makedirs(raft_out, exist_ok=True)
     os.makedirs(args.out_path, exist_ok=True)
 
-    infer_raft(in_path=args.in_path, out_path=first_inter)
-    infer_raft(in_path=first_inter, out_path=second_inter)
+    logger.info("Starting first interpolation")
+    infer_rife(in_path=args.in_path, out_path=first_inter, keep_source_imgs=False, starting_index=1)
+    logger.info("Starting second interpolation")
+    infer_rife(in_path=first_inter, out_path=second_inter, keep_source_imgs=True, starting_index=1)
 
-    shutil.copy(sorted(os.listdir(args.in_path))[0], raft_out + str(0).zfill(6) + ".png")
-    for i, f in enumerate(sorted(os.listdir(first_inter))):
-        shutil.move(first_inter + f, raft_out + str(i * 2 + 1).zfill(6) + ".png")
-    for i, f in enumerate(sorted(os.listdir(second_inter))):
-        shutil.move(second_inter + f, raft_out + str((i + 1) * 2).zfill(6) + ".png")
-    shutil.copy(sorted(os.listdir(args.in_path))[-1], raft_out + str(len(os.listdir(raft_out))).zfill(6) + ".png")
+    shutil.copy(sorted(os.listdir(args.in_path))[0], second_inter + str(0).zfill(6) + ".png")
+    shutil.copy(sorted(os.listdir(args.in_path))[-1],
+                second_inter + str(len(os.listdir(second_inter))).zfill(6) + ".png")
 
     shutil.rmtree(first_inter, ignore_errors=True)
-    shutil.rmtree(second_inter, ignore_errors=True)
 
     dl_out = "dl_out/"
     shutil.rmtree(dl_out, ignore_errors=True)
     os.makedirs(dl_out, exist_ok=True)
+    logger.info("Starting deeplab")
     infer_dl(args.in_path, dl_out)
 
     flownet_forward = "flownet_forward/"
@@ -99,7 +99,9 @@ if __name__ == '__main__':
     os.makedirs(flownet_reverse, exist_ok=True)
     os.makedirs(flownet_out, exist_ok=True)
 
+    logger.info("Starting forward flownet")
     infer_flownet(dl_out, flownet_forward, reverse=False)
+    logger.info("Starting reverse flownet")
     infer_flownet(dl_out, flownet_reverse, reverse=True)
 
     front = glob(flownet_forward + "*.flo")[1:]
@@ -111,8 +113,11 @@ if __name__ == '__main__':
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
 
-    combine_masks_with_2xint(dl_out, flownet_out, args.in_path, raft_out, args.out_path)
+    logger.info("Starting combining")
+    combine_masks_with_2xint(dl_out, flownet_out, args.in_path, second_inter, args.out_path)
 
     shutil.rmtree(flownet_out, ignore_errors=True)
-    shutil.rmtree(raft_out, ignore_errors=True)
+    shutil.rmtree(second_inter, ignore_errors=True)
     shutil.rmtree(dl_out, ignore_errors=True)
+
+    logger.info("Finished artefacts stage")
