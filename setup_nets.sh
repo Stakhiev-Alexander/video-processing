@@ -55,7 +55,7 @@ fi
 
 for filename in run_scripts/*.sh; do
     [ -e "$filename" ] || continue
-    chmod +x filename
+    chmod +x "$filename"
 done
 
 exit 0 
