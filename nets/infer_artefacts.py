@@ -49,15 +49,15 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
     ext = "/*.png"
     i = 1
 
-    for flow, mask, orig, inter in tzip(glob(flow_path + ext), glob(mask_path + ext)[1:], glob(orig_img_path + ext)[2:],
-                                        glob(inter_img_path + ext)[2::2]):
+    for flow, mask, orig, inter in tzip(sorted(glob(flow_path + ext)), sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
+                                        sorted(glob(inter_img_path + ext))[2::2]):
         i += 1
         flow = cv2.imread(flow, 0)
         mask = (cv2.imread(mask, 0) & np.logical_not(flow))
         orig = cv2.imread(orig, 0)
         inter = cv2.imread(inter, 0)
         out = np.where(mask, inter, orig)
-        cv2.imwrite(out_path + str(i).zfill(6) + ".png", out)
+        cv2.imwrite(out_path + '/' + str(i).zfill(6) + ".png", out)
 
 
 def rife_stage(args):
@@ -101,17 +101,17 @@ def flownet_stage(args):
     logger.info("Starting reverse flownet")
     infer_flownet(args.dl_out, flownet_reverse, reverse=True, downscale_factor=args.downscale_factor)
 
-    front = glob(flownet_forward + "*.flo")[1:]
-    back = glob(flownet_reverse + "*.flo")[::-1]
+    front = sorted(glob(flownet_forward + "*.flo")[1:])
+    back = sorted(glob(flownet_reverse + "*.flo")[::-1])
 
     for i, (f1, f2) in enumerate(tzip(front, back)):
         combined_flows = two_way_flow(f1, f2)
-        print(combined_flows.shape)
+
         if args.downscale_factor != 1:
             h, w = combined_flows.shape[0] * args.downscale_factor, combined_flows.shape[1] * args.downscale_factor
-            print(h, w)
             combined_flows = combined_flows.astype('float32')
             combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC).astype('uint8')
+
         cv2.imwrite(args.flownet_out + str(i).zfill(6) + ".png", combined_flows)
 
     shutil.rmtree(flownet_forward, ignore_errors=True)
