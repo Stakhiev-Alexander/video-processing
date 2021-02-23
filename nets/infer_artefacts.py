@@ -1,9 +1,9 @@
 import argparse
 import os
-import shutil
 import pathlib
-from glob import glob
+import shutil
 import sys
+from glob import glob
 
 sys.path.append(sys.path[0] + '/..')
 
@@ -17,6 +17,7 @@ from nets.RIFE.inference_imgs import infer_rife
 from nets.flownet.infer_flownet import infer_flownet
 
 logger = logger.get_logger(__name__)
+base_path = str(pathlib.Path(__file__).parent.absolute())
 
 
 def read_flow(fn):
@@ -44,6 +45,7 @@ def two_way_flow(f1, f2):
 
 
 def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path, out_path):
+    logger.info("Starting combining")
     ext = "/*.png"
     i = 1
 
@@ -58,59 +60,46 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
         cv2.imwrite(out_path + str(i).zfill(6) + ".png", out)
 
 
-if __name__ == '__main__':
-    logger.info("Starting artefacts stage")
-    base_path = str(pathlib.Path(__file__).parent.absolute())
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--in-path', '-i', type=str, help='image to test')
-    parser.add_argument('--out-path', '-o', type=str, help='mask image to save')
-    args = parser.parse_args()
-
+def rife_stage(args):
     first_inter = "first_inter/"
-    second_inter = "second_inter/"
-
     shutil.rmtree(first_inter, ignore_errors=True)
-    shutil.rmtree(second_inter, ignore_errors=True)
-    shutil.rmtree(args.out_path, ignore_errors=True)
-
+    shutil.rmtree(args.rife_out, ignore_errors=True)
     os.makedirs(first_inter, exist_ok=True)
-    os.makedirs(second_inter, exist_ok=True)
-    os.makedirs(args.out_path, exist_ok=True)
+    os.makedirs(args.rife_out, exist_ok=True)
 
     logger.info("Starting first interpolation")
     infer_rife(in_path=args.in_path, out_path=first_inter, keep_source_imgs=False, starting_index=1)
     logger.info("Starting second interpolation")
-    infer_rife(in_path=first_inter, out_path=second_inter, keep_source_imgs=True, starting_index=1)
+    infer_rife(in_path=first_inter, out_path=args.rife_out, keep_source_imgs=True, starting_index=1)
 
-    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[0], second_inter + str(0).zfill(6) + ".png")
+    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[0], args.rife_out + str(0).zfill(6) + ".png")
     shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[-1],
-                second_inter + str(len(os.listdir(second_inter))).zfill(6) + ".png")
+                args.rife_out + str(len(os.listdir(args.rife_out))).zfill(6) + ".png")
 
     shutil.rmtree(first_inter, ignore_errors=True)
 
-    dl_out = base_path + "/../dl_out/"
-    shutil.rmtree(dl_out, ignore_errors=True)
-    os.makedirs(dl_out, exist_ok=True)
-    logger.info("Starting deeplab")
-    infer_dl(args.in_path, dl_out)
 
+def dl_stage(args):
+    shutil.rmtree(args.dl_out, ignore_errors=True)
+    os.makedirs(args.dl_out, exist_ok=True)
+    logger.info("Starting deeplab")
+    infer_dl(args.in_path, args.dl_out)
+
+
+def flownet_stage(args):
     flownet_forward = base_path + "/../flownet_forward/"
     flownet_reverse = base_path + "/../flownet_reverse/"
-    flownet_out = base_path + "/../flownet_out/"
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
-    shutil.rmtree(flownet_out, ignore_errors=True)
+    shutil.rmtree(args.flownet_out, ignore_errors=True)
     os.makedirs(flownet_forward, exist_ok=True)
     os.makedirs(flownet_reverse, exist_ok=True)
-    os.makedirs(flownet_out, exist_ok=True)
-
-    downscale_factor = 2
+    os.makedirs(args.flownet_out, exist_ok=True)
 
     logger.info("Starting forward flownet")
-    infer_flownet(dl_out, flownet_forward, reverse=False, downscale_factor=downscale_factor)
+    infer_flownet(args.dl_out, flownet_forward, reverse=False, downscale_factor=args.downscale_factor)
     logger.info("Starting reverse flownet")
-    infer_flownet(dl_out, flownet_reverse, reverse=True, downscale_factor=downscale_factor)
+    infer_flownet(args.dl_out, flownet_reverse, reverse=True, downscale_factor=args.downscale_factor)
 
     front = glob(flownet_forward + "*.flo")[1:]
     back = glob(flownet_reverse + "*.flo")[::-1]
@@ -118,21 +107,44 @@ if __name__ == '__main__':
     for i, (f1, f2) in enumerate(tzip(front, back)):
         combined_flows = two_way_flow(f1, f2)
         print(combined_flows.shape)
-        if downscale_factor != 1:
-            h, w = combined_flows.shape[0] * downscale_factor, combined_flows.shape[1] * downscale_factor
+        if args.downscale_factor != 1:
+            h, w = combined_flows.shape[0] * args.downscale_factor, combined_flows.shape[1] * args.downscale_factor
             print(h, w)
             combined_flows = combined_flows.astype('float32')
             combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC).astype('uint8')
-        cv2.imwrite(flownet_out + str(i).zfill(6) + ".png", combined_flows)
+        cv2.imwrite(args.flownet_out + str(i).zfill(6) + ".png", combined_flows)
 
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
 
-    logger.info("Starting combining")
-    combine_masks_with_2xint(dl_out, flownet_out, args.in_path, second_inter, args.out_path)
 
-   # shutil.rmtree(flownet_out, ignore_errors=True)
-   # shutil.rmtree(second_inter, ignore_errors=True)
-   # shutil.rmtree(dl_out, ignore_errors=True)
+if __name__ == '__main__':
+    logger.info("Starting artefacts stage")
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--in-path', '-i', type=str, help='image to test')
+    parser.add_argument('--out-path', '-o', type=str, help='mask image to save')
+    parser.add_argument('--downscale-factor', '-f', type=int, default=1)
+    parser.add_argument('--rife-out', type=str, default="/../output/rife_out/")
+    parser.add_argument('--dl-out', type=str, default="/../output/dl_out/")
+    parser.add_argument('--flownet-out', type=str, default="/../output/flownet_out/")
+    args = parser.parse_args()
+
+    args.rife_out = base_path + args.rife_out
+    args.dl_out = base_path + args.dl_out
+    args.flownet_out = base_path + args.flownet_out
+
+    shutil.rmtree(args.out_path, ignore_errors=True)
+    os.makedirs(args.out_path, exist_ok=True)
+
+    rife_stage(args)
+    dl_stage(args)
+    flownet_stage(args)
+
+    combine_masks_with_2xint(args.dl_out, args.flownet_out, args.in_path, args.rife_out, args.out_path)
+
+    # shutil.rmtree(args.flownet_out, ignore_errors=True)
+    # shutil.rmtree(args.rife_out, ignore_errors=True)
+    # shutil.rmtree(args.dl_out, ignore_errors=True)
 
     logger.info("Finished artefacts stage")
