@@ -61,7 +61,6 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
 if __name__ == '__main__':
     logger.info("Starting artefacts stage")
     base_path = str(pathlib.Path(__file__).parent.absolute())
-    print(base_path)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--in-path', '-i', type=str, help='image to test')
@@ -118,9 +117,12 @@ if __name__ == '__main__':
 
     for i, (f1, f2) in enumerate(tzip(front, back)):
         combined_flows = two_way_flow(f1, f2)
+        print(combined_flows.shape)
         if downscale_factor != 1:
             h, w = combined_flows.shape[0] * downscale_factor, combined_flows.shape[1] * downscale_factor
-            combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC)
+            print(h, w)
+            combined_flows = combined_flows.astype('float32')
+            combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC).astype('uint8')
         cv2.imwrite(flownet_out + str(i).zfill(6) + ".png", combined_flows)
 
     shutil.rmtree(flownet_forward, ignore_errors=True)
@@ -129,8 +131,8 @@ if __name__ == '__main__':
     logger.info("Starting combining")
     combine_masks_with_2xint(dl_out, flownet_out, args.in_path, second_inter, args.out_path)
 
-    shutil.rmtree(flownet_out, ignore_errors=True)
-    shutil.rmtree(second_inter, ignore_errors=True)
-    shutil.rmtree(dl_out, ignore_errors=True)
+   # shutil.rmtree(flownet_out, ignore_errors=True)
+   # shutil.rmtree(second_inter, ignore_errors=True)
+   # shutil.rmtree(dl_out, ignore_errors=True)
 
     logger.info("Finished artefacts stage")
