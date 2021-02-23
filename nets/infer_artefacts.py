@@ -5,11 +5,11 @@ import shutil
 import sys
 from glob import glob
 
-sys.path.append(sys.path[0] + '/..')
-
 import cv2
 import numpy as np
 from tqdm.contrib import tzip
+
+sys.path.append(sys.path[0] + '/..')
 
 import utils.logger as logger
 from nets.DeepLab.infer_prob import infer_dl
@@ -61,7 +61,7 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
 
 
 def rife_stage(args):
-    first_inter = "first_inter/"
+    first_inter = base_path + "/../output/first_inter/"
     shutil.rmtree(first_inter, ignore_errors=True)
     shutil.rmtree(args.rife_out, ignore_errors=True)
     os.makedirs(first_inter, exist_ok=True)
@@ -87,8 +87,8 @@ def dl_stage(args):
 
 
 def flownet_stage(args):
-    flownet_forward = base_path + "/../flownet_forward/"
-    flownet_reverse = base_path + "/../flownet_reverse/"
+    flownet_forward = base_path + "/../output/flownet_forward/"
+    flownet_reverse = base_path + "/../output/flownet_reverse/"
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
     shutil.rmtree(args.flownet_out, ignore_errors=True)
