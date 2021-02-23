@@ -102,16 +102,22 @@ if __name__ == '__main__':
     os.makedirs(flownet_reverse, exist_ok=True)
     os.makedirs(flownet_out, exist_ok=True)
 
+    downscale_factor = 2
+
     logger.info("Starting forward flownet")
-    infer_flownet(dl_out, flownet_forward, reverse=False)
+    infer_flownet(dl_out, flownet_forward, reverse=False, downscale_factor=downscale_factor)
     logger.info("Starting reverse flownet")
-    infer_flownet(dl_out, flownet_reverse, reverse=True)
+    infer_flownet(dl_out, flownet_reverse, reverse=True, downscale_factor=downscale_factor)
 
     front = glob(flownet_forward + "*.flo")[1:]
     back = glob(flownet_reverse + "*.flo")[::-1]
 
     for i, (f1, f2) in enumerate(tzip(front, back)):
-        cv2.imwrite(flownet_out + str(i).zfill(6) + ".png", two_way_flow(f1, f2))
+        combined_flows = two_way_flow(f1, f2)
+        if downscale_factor != 1:
+            h, w = combined_flows.shape[0] * downscale_factor, combined_flows.shape[1] * downscale_factor
+            combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC)
+        cv2.imwrite(flownet_out + str(i).zfill(6) + ".png", combined_flows)
 
     shutil.rmtree(flownet_forward, ignore_errors=True)
     shutil.rmtree(flownet_reverse, ignore_errors=True)
