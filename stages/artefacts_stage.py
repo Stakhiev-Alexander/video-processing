@@ -9,8 +9,9 @@ logger = logger.get_logger(__name__)
 
 
 class ArtefactsStage(SequenceStage):
-    def __init__(self, output_path='./output/artefacts_stage_output/'):
+    def __init__(self, output_path='./output/artefacts_stage_output/', downscale_factor=1):
         self._output_path = str(Path(output_path).absolute())
+        self._downscale_factor = downscale_factor
 
     def execute(self, input_path):
         self._input_path = str(Path(input_path).absolute())
@@ -18,7 +19,7 @@ class ArtefactsStage(SequenceStage):
         Path(self._output_path).mkdir(exist_ok=True, parents=True)
 
         script_path = './run_scripts/run_artefacts.sh'
-        parameters = f'--input_path {self._input_path} --output_path {self._output_path}'
+        parameters = f'--input_path {self._input_path} --output_path {self._output_path} --downscale-factor {self._downscale_factor}'
         run_cmd = script_path + ' ' + parameters
 
         try:
