@@ -49,11 +49,20 @@ def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path
     ext = "/*.png"
     i = 1
 
-    for flow, mask, orig, inter in tzip(sorted(glob(flow_path + ext)), sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
+#    for flow, mask, orig, inter in tzip(sorted(glob(flow_path + ext)), sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
+#                                                    sorted(glob(inter_img_path + ext))[2::]):
+#        i += 1
+#        flow = cv2.imread(flow, 0)
+#        mask = cv2.imread(mask, 0) & np.logical_not(flow))
+#        orig = cv2.imread(orig, 0)
+#        inter = cv2.imread(inter, 0)
+#        out = np.where(mask, inter, orig)
+#        cv2.imwrite(out_path + '/' + str(i).zfill(6) + ".png", out)
+
+    for mask, orig, inter in tzip(sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
                                         sorted(glob(inter_img_path + ext))[2::]):
         i += 1
-        #flow = cv2.imread(flow, 0)
-        mask = cv2.imread(mask, 0) # & np.logical_not(flow))
+        mask = cv2.imread(mask, 0)
         orig = cv2.imread(orig, 0)
         inter = cv2.imread(inter, 0)
         out = np.where(mask, inter, orig)
