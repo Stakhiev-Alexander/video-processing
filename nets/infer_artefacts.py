@@ -137,8 +137,8 @@ if __name__ == '__main__':
     shutil.rmtree(args.out_path, ignore_errors=True)
     os.makedirs(args.out_path, exist_ok=True)
 
-    rife_stage(args)
-    dl_stage(args)
+    #rife_stage(args)
+    #dl_stage(args)
     flownet_stage(args)
 
     combine_masks_with_2xint(args.dl_out, args.flownet_out, args.in_path, args.rife_out, args.out_path)
