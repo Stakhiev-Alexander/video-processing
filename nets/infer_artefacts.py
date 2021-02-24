@@ -110,7 +110,7 @@ def flownet_stage(args):
         if args.downscale_factor != 1:
             h, w = combined_flows.shape[0] * args.downscale_factor, combined_flows.shape[1] * args.downscale_factor
             combined_flows = combined_flows.astype('float32')
-            combined_flows = cv2.resize(combined_flows, dsize=(h, w), interpolation=cv2.INTER_CUBIC).astype('uint8')
+            combined_flows = cv2.resize(combined_flows, dsize=(w, h), interpolation=cv2.INTER_CUBIC).astype('uint8')
 
         cv2.imwrite(args.flownet_out + str(i).zfill(6) + ".png", combined_flows)
 
