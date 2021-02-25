@@ -18,7 +18,7 @@ class SRStage(SequenceStage):
         shutil.rmtree(self._output_path, ignore_errors=True)
         Path(self._output_path).mkdir(exist_ok=True)
 
-        script_path = '../run_scripts/run_fast_srgan.sh'
+        script_path = './run_scripts/run_fast_srgan.sh'
         parameters = f'--input_path {self._input_path} --output_path {self._output_path}'
         run_cmd = script_path + ' ' + parameters
 

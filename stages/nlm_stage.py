@@ -17,19 +17,21 @@ class NLMStage(SequenceStage):
                  h=7,
                  templateWindowSize=9,
                  searchWindowSize=11,
-                 grayscale=True):
+                 grayscale=False):
         self._output_path = str(Path(output_path).absolute())
         self._h = h
         self._templateWindowSize = templateWindowSize
         self._searchWindowSize = searchWindowSize
         if grayscale:
             self._img_mode = cv.IMREAD_GRAYSCALE
+        else:
+            self._img_mode = cv.IMREAD_COLOR
 
     def execute(self, input_path):
         self._input_path = str(Path(input_path).absolute()) + '/'
-        Path(self._input_path).mkdir(exist_ok=True)
+        Path(self._input_path).mkdir(exist_ok=True, parents=True)
         shutil.rmtree(self._output_path, ignore_errors=True)
-        Path(self._output_path).mkdir(exist_ok=True)
+        Path(self._output_path).mkdir(exist_ok=True, parents=True)
 
         logger.info(f'Starting NLMStage\nInput path: {self._input_path}\nOutput path: {self._output_path}')
 
@@ -40,7 +42,6 @@ class NLMStage(SequenceStage):
                                                 h=self._h,
                                                 templateWindowSize=self._templateWindowSize,
                                                 searchWindowSize=self._searchWindowSize)
-
         cv.imwrite(self._output_path + '/' + str(0).zfill(6) + '.' + IMG_EXTENTION, firstframe)
 
         for i, img_path in enumerate(tqdm(imgs_paths[2:])):
