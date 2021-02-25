@@ -4,8 +4,6 @@ import numpy as np
 from skimage.io import imread, imsave
 from tqdm import tqdm
 
-IMG_EXTENTION = '.png'
-
 
 def add_noise_img(sigma, img_path):
     image = imread(img_path)
@@ -18,9 +16,9 @@ def add_noise_img(sigma, img_path):
 
 
 def add_noise_imgs(imgs_path='./video_frames/', out_path='./noisy_video_frames/', sigma=30):
-    imgs_path += '*' + IMG_EXTENTION
+    imgs_path += '*.png'
 
-    for n_processed, img_path in enumerate(tqdm(glob.glob(imgs_path))):
+    for n_processed, img_path in enumerate(tqdm(glob(imgs_path))):
         n_img = add_noise_img(sigma, img_path)
         imsave(out_path + img_path.split('/')[-1], n_img)
 

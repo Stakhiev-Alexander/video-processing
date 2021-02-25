@@ -7,8 +7,6 @@ import ffmpeg
 import image_slicer
 from PIL import Image
 
-IMG_EXTENTION = 'png'
-
 
 def get_n_frames(video_path):
     cap = cv2.VideoCapture(video_path)
@@ -37,7 +35,7 @@ def cut_frames(video_path, output_dir='./cut_frames/', n_frames_cut=-1):
     '''
 
     os.makedirs(output_dir, exist_ok=True) # make output dirs recursively
-    out_path_pattern = output_dir + '%05d' + '.' + IMG_EXTENTION
+    out_path_pattern = output_dir + '%05d' + '.png'
     print(f'Images path pattern: {out_path_pattern}')
 
     n_frames = get_n_frames(video_path)
@@ -75,7 +73,7 @@ def cut_frames(video_path, output_dir='./cut_frames/', n_frames_cut=-1):
     
   
 def assemble_video(imgs_path, framerate, filename='output', output_dir='./'):
-    in_path_pattern = imgs_path + '*.' + IMG_EXTENTION
+    in_path_pattern = imgs_path + '*.png'
     out_path = output_dir + filename + '.mkv'
 
     # ffmpeg -framerate 50 -i ./sr_stage_output/%15d.png -c:v libx264 -pix_fmt yuv420p <output_dir>/<filename>.mkv
@@ -94,23 +92,23 @@ def assemble_video(imgs_path, framerate, filename='output', output_dir='./'):
 def split_imgs(imgs_path, output_dir, split_factor=4):
     os.makedirs(output_dir, exist_ok=True)
 
-    for img_path in glob.glob(imgs_path +  '*.' + IMG_EXTENTION):
+    for img_path in glob.glob(imgs_path +  '*.png'):
         tiles = image_slicer.slice(img_path, split_factor, save=False)
         img_name = os.path.splitext(os.path.basename(img_path))[0]
-        image_slicer.save_tiles(tiles, directory=output_dir, prefix=img_name, format=IMG_EXTENTION)
+        image_slicer.save_tiles(tiles, directory=output_dir, prefix=img_name, format="png")
 
 
 def join_imgs(imgs_path, output_dir, split_factor):
     os.makedirs(output_dir, exist_ok=True)
     base_names = set()
-    for img_path in glob.glob(imgs_path +  '*.' + IMG_EXTENTION):
+    for img_path in glob.glob(imgs_path + '*.png'):
         img_base_name = os.path.splitext(os.path.basename(img_path))[0].split('_')[0]
         base_names.add(img_base_name)
 
 
     for base_name in base_names:
         tiles = []
-        for i, img_path in enumerate(glob.glob(imgs_path +  f'{base_name}_*.' + IMG_EXTENTION)):
+        for i, img_path in enumerate(glob.glob(imgs_path +  f'{base_name}_*.png')):
             pos = image_slicer.get_image_column_row(os.path.basename(img_path))
             im = Image.open(img_path)
             position_xy = [0, 0]
@@ -129,7 +127,7 @@ def join_imgs(imgs_path, output_dir, split_factor):
             )
         
         joined_img = image_slicer.join(tiles)
-        joined_img.save(output_dir + base_name + '.' + IMG_EXTENTION)
+        joined_img.save(output_dir + base_name + '.png')
 
 
     def copy_audio(input_video, output_video):

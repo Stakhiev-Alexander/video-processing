@@ -4,20 +4,18 @@ from ivhc.imnest_ivhc import imnest_ivhc
 from skimage.io import imread
 from skimage.restoration import (estimate_sigma)
 
-IMG_EXTENTION = '.png'
-
 
 def get_est_sigma(image_path, method='skimage', max_poly_deg=5):
-    '''
+    """
     Image noise estimation
 
     :image_path (string): path to the image
     :method (string, optional): can be either ivhc or skimage
-    :poly (int, optional): max polynomial regression degree for ivhc 
-    
-    :return (float): estimated noise sigma of a given picture 
+    :poly (int, optional): max polynomial regression degree for ivhc
+
+    :return (float): estimated noise sigma of a given picture
                         or None if ivhc throws exception due to low sigma
-    '''
+    """
     img = imread(image_path)
     print(f'{image_path}')
 
@@ -35,7 +33,7 @@ def get_est_sigma(image_path, method='skimage', max_poly_deg=5):
 
 
 def avg_images_noise_sigma(images_path, method='skimage', max_poly_deg=5):
-    '''
+    """
     Multiple image noise estimation
 
     :images_path(string): path to images
@@ -43,10 +41,10 @@ def avg_images_noise_sigma(images_path, method='skimage', max_poly_deg=5):
     :poly (int, optional): max polynomial regression degree for ivhc method
 
     :return (float): average estimated noise sigma
-    '''
+    """
     est_sigma_sum, n_success = 0, 0
 
-    images_path += '*' + IMG_EXTENTION
+    images_path += '*.png'
 
     print('Estimating:')
     for img_path in glob.glob(images_path):

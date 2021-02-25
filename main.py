@@ -6,7 +6,7 @@ from stages.sr_stage import SRStage
 
 if __name__ == '__main__':
     ps = ProcessSequence(input_path='/home/quadro/videoproc/datasets/umatic_frames/')
-    ps.add(NLMStage())
+    ps.add(NLMStage(grayscale=False))
     ps.add(SRStage())
     ps.execute()
 
