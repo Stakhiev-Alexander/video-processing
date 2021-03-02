@@ -8,6 +8,7 @@ from tqdm import tqdm
 import utils.logger as logger
 from stages.sequence_stage_base import SequenceStage
 from utils.cb_utils import cb_seq
+from utils.scene_detection import find_scenes
 
 logger = logger.get_logger(__name__)
 
@@ -33,10 +34,7 @@ class CBStage(SequenceStage):
         imgs_paths = glob(self._input_path + '/*.png')
         imgs_paths.sort()
 
-        # slices = find_scenes("../hockey17_sig15_sr.mp4")
-        slices = [(0, 124), (124, 362), (362, 587), (587, 681), (681, 845), 845, (846, 935), 935, (936, 1018),
-                  (1018, 1235),
-                  (1235, 1317), (1317, 1550)]
+        slices = find_scenes(input_path, return_slices=True)
 
         for s in tqdm(slices):
             if isinstance(s, tuple):

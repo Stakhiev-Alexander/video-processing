@@ -7,13 +7,17 @@ from glob import glob
 
 import cv2
 import numpy as np
+from tqdm import tqdm
 from tqdm.contrib import tzip
+
+from utils.scene_detection import find_scenes
 
 sys.path.append(sys.path[0] + '/..')
 
 import utils.logger as logger
 from nets.DeepLab.infer_prob import infer_dl
-from nets.RIFE.inference_imgs import infer_rife
+from nets.RIFE.inference_imgs import infer_rife, get_rife_model
+
 from nets.flownet.infer_flownet import infer_flownet
 
 logger = logger.get_logger(__name__)
@@ -44,23 +48,30 @@ def two_way_flow(f1, f2):
     return np.where(mask, 255, 0)  # True if moving object, else False
 
 
-def combine_masks_with_2xint(mask_path, flow_path, orig_img_path, inter_img_path, out_path):
+def combine_rife_dl_flownet(mask_path, flow_path, orig_img_path, inter_img_path, out_path):
     logger.info("Starting combining")
     ext = "/*.png"
     i = 1
 
-#    for flow, mask, orig, inter in tzip(sorted(glob(flow_path + ext)), sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
-#                                                    sorted(glob(inter_img_path + ext))[2::]):
-#        i += 1
-#        flow = cv2.imread(flow, 0)
-#        mask = cv2.imread(mask, 0) & np.logical_not(flow))
-#        orig = cv2.imread(orig, 0)
-#        inter = cv2.imread(inter, 0)
-#        out = np.where(mask, inter, orig)
-#        cv2.imwrite(out_path + '/' + str(i).zfill(6) + ".png", out)
+    for flow, mask, orig, inter in tzip(sorted(glob(flow_path + ext)), sorted(glob(mask_path + ext))[1:],
+                                        sorted(glob(orig_img_path + ext))[2:],
+                                        sorted(glob(inter_img_path + ext))[2::]):
+        i += 1
+        flow = cv2.imread(flow, 0)
+        mask = cv2.imread(mask, 0) & np.logical_not(flow)
+        orig = cv2.imread(orig, 0)
+        inter = cv2.imread(inter, 0)
+        out = np.where(mask, inter, orig)
+        cv2.imwrite(out_path + '/' + str(i).zfill(6) + ".png", out)
+
+
+def combine_rife_dl(mask_path, orig_img_path, inter_img_path, out_path):
+    logger.info("Starting combining")
+    ext = "/*.png"
+    i = 1
 
     for mask, orig, inter in tzip(sorted(glob(mask_path + ext))[1:], sorted(glob(orig_img_path + ext))[2:],
-                                        sorted(glob(inter_img_path + ext))[2::]):
+                                  sorted(glob(inter_img_path + ext))[2::]):
         i += 1
         mask = cv2.imread(mask, 0)
         orig = cv2.imread(orig, 0)
@@ -76,16 +87,29 @@ def rife_stage(args):
     os.makedirs(first_inter, exist_ok=True)
     os.makedirs(args.rife_out, exist_ok=True)
 
-    logger.info("Starting first interpolation")
-    infer_rife(in_path=args.in_path, out_path=first_inter, keep_source_imgs=False)
-    logger.info("Starting second interpolation")
-    infer_rife(in_path=first_inter, out_path=args.rife_out, keep_source_imgs=False, starting_index=1)
+    slices = find_scenes(args.in_path, return_slices=True)
+    imgs_paths = sorted(glob(args.in_path + '/*.png'))
 
-    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[0], args.rife_out + str(0).zfill(6) + ".png")
-    shutil.copy(args.in_path + '/' + sorted(os.listdir(args.in_path))[-1],
-                args.rife_out + str(len(os.listdir(args.rife_out))).zfill(6) + ".png")
+    logger.info("Starting double interpolation")
+    model = get_rife_model()
+    with tqdm(total=len(imgs_paths)) as pbar:
+        for s in slices:
+            if isinstance(s, tuple):
+                in_paths = imgs_paths[slice(*s)]
 
-    shutil.rmtree(first_inter, ignore_errors=True)
+                infer_rife(in_paths=in_paths, out_path=first_inter, keep_source_imgs=False, model=model, tqdm_bar=pbar)
+                in_paths2 = sorted(glob(first_inter + '/*.png'))
+                infer_rife(in_paths=in_paths2, out_path=args.rife_out, keep_source_imgs=False, starting_index=s[0] + 1,
+                           model=model)
+
+                shutil.rmtree(first_inter, ignore_errors=True)
+                os.makedirs(first_inter, exist_ok=True)
+
+                shutil.copy(imgs_paths[s[0]], args.rife_out + str(s[0]).zfill(6) + ".png")
+                shutil.copy(imgs_paths[s[1] - 1], args.rife_out + str(s[1] - 1).zfill(6) + ".png")
+            else:  # 1 frame
+                shutil.copy(imgs_paths[s], args.rife_out)
+                pbar.update(1)
 
 
 def dl_stage(args):
@@ -137,23 +161,34 @@ if __name__ == '__main__':
     parser.add_argument('--rife-out', type=str, default="/../output/rife_out/")
     parser.add_argument('--dl-out', type=str, default="/../output/dl_out/")
     parser.add_argument('--flownet-out', type=str, default="/../output/flownet_out/")
+    parser.add_argument('--use-dl', action='store_true')
+    parser.add_argument('--use-dl-flownet', action='store_true')
+
     args = parser.parse_args()
 
     args.rife_out = base_path + args.rife_out
-    args.dl_out = base_path + args.dl_out
-    args.flownet_out = base_path + args.flownet_out
-
     shutil.rmtree(args.out_path, ignore_errors=True)
     os.makedirs(args.out_path, exist_ok=True)
 
     rife_stage(args)
-    dl_stage(args)
-    # flownet_stage(args)
 
-    combine_masks_with_2xint(args.dl_out, args.flownet_out, args.in_path, args.rife_out, args.out_path)
+    if args.use_dl_flownet:
+        args.dl_out = base_path + args.dl_out
+        args.flownet_out = base_path + args.flownet_out
 
-    # shutil.rmtree(args.flownet_out, ignore_errors=True)
+        dl_stage(args)
+        flownet_stage(args)
+
+        combine_rife_dl_flownet(args.dl_out, args.flownet_out, args.in_path, args.rife_out, args.out_path)
+    elif args.use_dl:
+        args.dl_out = base_path + args.dl_out
+        combine_rife_dl(args.dl_out, args.in_path, args.rife_out, args.out_path)
+    else:
+        shutil.rmtree(args.out_path, ignore_errors=True)
+        os.rename(args.rife_out, args.out_path)
+
     # shutil.rmtree(args.rife_out, ignore_errors=True)
     # shutil.rmtree(args.dl_out, ignore_errors=True)
+    # shutil.rmtree(args.flownet_out, ignore_errors=True)
 
     logger.info("Finished artefacts stage")
