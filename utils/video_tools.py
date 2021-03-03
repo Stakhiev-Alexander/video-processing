@@ -73,7 +73,7 @@ def cut_frames(video_path, output_dir='./cut_frames/', n_frames_cut=-1):
     
   
 def assemble_video(imgs_path, framerate, filename='output', output_dir='./'):
-    in_path_pattern = imgs_path + '*.png'
+    in_path_pattern = imgs_path + '/*.png'
     out_path = output_dir + filename + '.mkv'
 
     # ffmpeg -framerate 50 -i ./sr_stage_output/%15d.png -c:v libx264 -pix_fmt yuv420p <output_dir>/<filename>.mkv

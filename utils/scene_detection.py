@@ -42,7 +42,7 @@ def _analyse_metrics(data, last_frame_in_video):
 
 def find_scenes(imgs_path, return_slices):
     n_zeros = len(os.listdir(imgs_path)[0]) - 4
-    video_manager = VideoManager([f'{imgs_path}\\%0{n_zeros}d.png'])
+    video_manager = VideoManager([f'{imgs_path}/%0{n_zeros}d.png'])
 
     stats_manager = StatsManager()
     scene_manager = SceneManager(stats_manager)
