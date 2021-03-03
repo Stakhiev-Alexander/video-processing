@@ -10,10 +10,9 @@ import numpy as np
 from tqdm import tqdm
 from tqdm.contrib import tzip
 
-from utils.scene_detection import find_scenes
-
 sys.path.append(sys.path[0] + '/..')
 
+from utils.scene_detection import find_scenes
 import utils.logger as logger
 from nets.DeepLab.infer_prob import infer_dl
 from nets.RIFE.inference_imgs import infer_rife, get_rife_model
