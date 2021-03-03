@@ -87,6 +87,7 @@ def rife_stage(args):
     os.makedirs(args.rife_out, exist_ok=True)
 
     slices = find_scenes(args.in_path, return_slices=True)
+    logger.info(f"Detected scenes: {slices}")
     imgs_paths = sorted(glob(args.in_path + '/*.png'))
 
     logger.info("Starting double interpolation")
