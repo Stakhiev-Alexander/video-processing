@@ -17,7 +17,8 @@ class AssembleStage(SequenceStage):
         self._input_path = str(Path(input_path).absolute())
 
         try:
-            assemble_video(imgs_path=self._input_path, framerate=self._framerate, filename=self._filename)
+            assemble_video(imgs_path=self._input_path, framerate=self._framerate, filename=self._filename,
+                           output_dir=self._output_path)
         except Exception as err:
             logger.error(err)
             raise err
