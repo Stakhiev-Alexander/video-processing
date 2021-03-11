@@ -28,7 +28,6 @@ class NLMStage(SequenceStage):
 
     def execute(self, input_path):
         self._input_path = str(Path(input_path).absolute()) + '/'
-        Path(self._input_path).mkdir(exist_ok=True, parents=True)
         shutil.rmtree(self._output_path, ignore_errors=True)
         Path(self._output_path).mkdir(exist_ok=True, parents=True)
 
@@ -62,10 +61,16 @@ class NLMStage(SequenceStage):
                                               templateWindowSize=self._templateWindowSize,
                                               searchWindowSize=self._searchWindowSize)
 
-        cv2.imwrite(self._output_path + '/' + str(len(imgs_paths)).zfill(6) + '.png', last_frame)
+        cv2.imwrite(self._output_path + '/' + str(len(imgs_paths) - 1).zfill(6) + '.png', last_frame)
 
         logger.info('Finished NLMStage')
 
     @property
     def output_path(self):
         return self._output_path
+
+
+if __name__ == '__main__':
+    original_img_path = 'D:\\PROGRAMMING\\vids_to_process\\betasp_cut\\1'
+    nlm_stage = NLMStage(grayscale=False, output_path='D:\\PROGRAMMING\\vids_to_process\\betasp_cut\\out', h=5)
+    nlm_stage.execute(original_img_path)
