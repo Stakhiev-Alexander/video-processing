@@ -71,6 +71,6 @@ class NLMStage(SequenceStage):
 
 
 if __name__ == '__main__':
-    original_img_path = 'D:\\PROGRAMMING\\vids_to_process\\betasp_cut\\1'
-    nlm_stage = NLMStage(grayscale=False, output_path='D:\\PROGRAMMING\\vids_to_process\\betasp_cut\\out', h=5)
+    original_img_path = 'path/to/imgs'
+    nlm_stage = NLMStage(grayscale=False, output_path='path/to/output', h=3)
     nlm_stage.execute(original_img_path)
